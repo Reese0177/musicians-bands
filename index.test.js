@@ -1,5 +1,5 @@
 const {sequelize} = require('./db');
-const {Band, Musician} = require('./index')
+const {Band, Musician, Song} = require('./index')
 
 describe('Band and Musician Models', () => {
     /**
@@ -35,6 +35,37 @@ describe('Band and Musician Models', () => {
         const musicians = await newBand.getMusicians();
 
         expect(musicians.length).toBe(2);
-        expect(musicians[0] instanceof Musician).toBeTruthy();
+    })
+
+    test('create song', async () => {
+        const newSong = await Song.create({title: 'Groovy', year: 2021});
+
+        expect(newSong.title).toBe("Groovy");
+    })
+
+    test('associate songs to bands', async () => {
+        const newBand = await Band.create({name: 'Bandy', genre: 'Rock'});
+        const newSong1 = await Song.create({title: 'Groovy', year: 2021});
+        const newSong2 = await Song.create({title: 'Cats', year: 2022});
+
+        await newBand.addSong(newSong1);
+        await newBand.addSong(newSong2);
+
+        const songs = await newBand.getSongs();
+
+        expect(songs.length).toBe(2);
+    })
+
+    test('associate bands to songs', async () => {
+        const newBand1 = await Band.create({name: 'Bandy', genre: 'Rock'});
+        const newBand2 = await Band.create({name: "Dogs", genre: "Pop"});
+        const newSong = await Song.create({title: 'Groovy', year: 2021});
+    
+        await newBand1.addSong(newSong);
+        await newBand2.addSong(newSong);
+
+        const bands = await newSong.getBands();
+
+        expect(bands.length).toBe(2);
     })
 })
