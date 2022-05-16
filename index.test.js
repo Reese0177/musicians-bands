@@ -65,7 +65,21 @@ describe('Band and Musician Models', () => {
         await newBand2.addSong(newSong);
 
         const bands = await newSong.getBands();
-
         expect(bands.length).toBe(2);
+    })
+
+    test('eager load bands with musicians', async () => {
+        const bands = await Band.findAll({include: [{model: Musician}]});
+        expect(bands[1].Musicians.length).toBe(2);
+    })
+
+    test('eager load bands with songs 1', async () => {
+        const bands = await Band.findAll({include: [{model: Song}]});
+        expect(bands[2].Songs.length).toBe(2);
+    })
+
+    test('eager load bands with songs 2', async () => {
+        const bands = await Band.findAll({include: [{model: Song}]});
+        expect(bands[3].Songs[0].title).toBe("Groovy");
     })
 })
